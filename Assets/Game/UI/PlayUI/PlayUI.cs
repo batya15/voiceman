@@ -14,7 +14,7 @@ namespace GameUI {
         Text coins;
 
         void Awake() {
-            Broadcaster.Subscribe(gameObject, "ChangedScore", "ChangedBestScore", "ChangedCoins");
+            Broadcaster.Subscribe(this, "ChangedScore", "ChangedBestScore", "ChangedCoins", "ResumeGame");
             ChangedScore();
             ChangedBestScore();
             ChangedCoins();
@@ -30,6 +30,14 @@ namespace GameUI {
 
         void ChangedCoins() {
             coins.text = "Coins: " + Prefs.UserPrefs.coins;
+        }
+
+        void OpenSetting() {
+            Broadcaster.SendEvent("OpenSetting", "ResumeGame");
+        }
+
+        void ResumeGame() {
+            Debug.Log("ResumeGame");
         }
     }
 

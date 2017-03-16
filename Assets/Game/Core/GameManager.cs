@@ -21,7 +21,7 @@ namespace Voiceman {
                 character.Play();
                 world.Play();
                 yield return new WaitUntil(() => GameState.state == GAME_STATE.FINISH);
-                //Проиграли игру
+                GameState.state = GAME_STATE.PLAY;
             }
         }
         

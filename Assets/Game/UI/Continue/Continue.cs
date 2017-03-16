@@ -12,5 +12,15 @@ namespace GameUI {
         void OpenContinue() {
             Show();
         }
+
+        void No() {
+            Voiceman.GameState.state = Voiceman.GAME_STATE.FINISH;
+            Close();
+        }
+
+        void ForCoins() {
+            Broadcaster.SendEvent("RegenerateCharacter");
+            Close();
+        }
     }
 }

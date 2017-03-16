@@ -1,25 +1,59 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;        
+using UnityEngine;
 
 public class Character : MonoBehaviour {
 
-    Rigidbody2D rigitbody;
+    Rigidbody2D rigitbody; 
+    Vector3 lastPosition = Vector3.zero;
+    bool _phisics = false;
+    bool phisics {
+        get { return _phisics; }
+        set {
+            _phisics = value;
+            if (_phisics) {
+                StartPhysics();
+            } else {
+                StopPhysics();
+            }
+        }
+    }
 
     void Awake() {
         rigitbody = GetComponent<Rigidbody2D>();
+        Broadcaster.Subscribe(this, "RegenerateCharacter");
     }
 
     public void Init() {
         transform.position = Vector3.zero;
-        StopPhysics();
+        phisics = false;
     }       
 
     public void Play() {
-        StartPhysics();
+        phisics = true;
     }
 
     public void Death() {
-        StopPhysics();
-        Voiceman.GameState.state = Voiceman.GAME_STATE.FINISH;
+        phisics = false;
+        Broadcaster.SendEvent("OpenContinue");
+    }
+
+    
+    IEnumerator RegenerateCharacter() {
+        Vector3 startPos = transform.position;
+        Vector3 targetPos = new Vector3(lastPosition.x, lastPosition.y + 2, lastPosition.z);
+        for (float t = 0; t < 1; t += Time.deltaTime) {
+            transform.position = Vector3.Lerp(startPos, targetPos, t * t);
+            yield return null;
+        }
+        transform.position = targetPos;     
+        phisics = true;
+    }
+
+    internal void saveLastPosition() {
+        if (phisics) {
+            lastPosition = transform.position;
+        }                                             
     }
 
     void StopPhysics() {

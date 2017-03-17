@@ -11,6 +11,8 @@ namespace Voiceman {
         Transform coins;
         [SerializeField]
         Transform bees;
+        [SerializeField]
+        Transform fishs;
 
         void Awake() {
             transform.position = new Vector3(-100000, 0, 0);
@@ -56,6 +58,20 @@ namespace Voiceman {
 
         public void UtilBee(BeeMob.Bee g) {
             g.transform.SetParent(bees);
+            g.transform.localPosition = Vector3.zero;
+        }
+
+        public GameObject GetFish() {
+            if (fishs.childCount == 0) {
+                return null;
+            } else {
+                return fishs.GetChild(0).gameObject;
+            }
+
+        }
+
+        public void UtilFish(Fish g) {
+            g.transform.SetParent(fishs);
             g.transform.localPosition = Vector3.zero;
         }
 

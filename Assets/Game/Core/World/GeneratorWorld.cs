@@ -9,6 +9,8 @@ namespace Voiceman {
         GameObject coin;
         [SerializeField]
         GameObject bee;
+        [SerializeField]
+        GameObject fish;
 
         int maxDistance = 0;
 
@@ -32,11 +34,19 @@ namespace Voiceman {
 
 
         int countGenCoin = 0;
-        [SerializeField]
         int beesCount = 0;
+        int fishCount = 0;
 
         void BuildPlatform(bool first = false) {
-            maxDistance += first ? 0 : Random.Range(2, 4);
+            int water = first ? 0 : Random.Range(2, 4);
+
+            if (GameState.distance > 15 && fishCount <= 0) {
+                InstanseFish(new Vector3(maxDistance + water / 2, Ground.STANDART_HEIGHT + .5f));
+                fishCount = Random.Range(3, 6);
+                countGenCoin = countGenCoin < 0? 1 : countGenCoin++;
+            }
+
+            maxDistance += water;
 
             int count = first ? Mathf.FloorToInt(CameraBehaviour.sizeW) : Random.Range(3, 8);
             int height = first ? 0 : Random.Range(0, 3);
@@ -68,6 +78,7 @@ namespace Voiceman {
 
             beesCount--;
             countGenCoin--;
+            fishCount--;
         }
 
         void InstanseCoin(Vector3 pos) {
@@ -87,6 +98,16 @@ namespace Voiceman {
             c.transform.SetParent(transform, false);
             c.transform.position = pos;
             c.GetComponent<BeeMob.Bee>().Init();
+        }
+
+        void InstanseFish(Vector3 pos) {
+            GameObject c = trash.GetFish();
+            if (c == null) {
+                c = Instantiate(fish);
+            }
+            c.transform.SetParent(transform, false);
+            c.transform.position = pos;
+            c.GetComponent<Fish>().Init();
         }
 
 

@@ -6,6 +6,8 @@ public class CameraBehaviour : MonoBehaviour {
 
     [SerializeField]
     Transform character;
+    [SerializeField]
+    BoxCollider2D coll;
 
     public static float delta {
         get;
@@ -20,6 +22,10 @@ public class CameraBehaviour : MonoBehaviour {
     void Awake() {
         sizeW = Camera.main.orthographicSize * 2 * Screen.width / Screen.height;
         delta = sizeW / 4;
+    }
+
+    private void Start() {
+        coll.size = new Vector2(sizeW + 10, coll.size.y);
     }
 
     void Update () {

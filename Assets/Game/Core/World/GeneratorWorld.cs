@@ -4,9 +4,18 @@ namespace Voiceman {
     public class GeneratorWorld : MonoBehaviour {
 
         [SerializeField]
-        GameObject platform;
+        GameObject ground;
+        [SerializeField]
+        GameObject coin;
 
         int maxDistance = 0;
+
+        float camDistance = 0;
+        Trash trash;
+
+        void Awake() {
+            trash = GlobalCacheFinder.FindObjectOfType<Trash>();
+        }
 
         public void Init() {
             run = false;
@@ -14,15 +23,51 @@ namespace Voiceman {
             foreach (Transform t in transform) {
                 Destroy(t.gameObject);
             }
+            camDistance = Camera.main.orthographicSize * 2 * Screen.width / Screen.height / 2 + 1;
+            BuildPlatform(true);
 
-            BuildPlatform(Mathf.FloorToInt(CameraBehaviour.sizeW));
         }
 
-        void BuildPlatform(int count) {
-            GameObject pl = Instantiate(platform);
+
+        int countGenCoin = 0;
+
+        void BuildPlatform(bool first = false) {
+            maxDistance += first ? 0 : Random.Range(2, 4);
+
+            int count = first ? Mathf.FloorToInt(CameraBehaviour.sizeW) : Random.Range(3, 8);
+            int height = first ? 0 : Random.Range(0, 3);
+
+            GameObject pl = trash.GetGround();
+            if (pl == null) {
+                pl = Instantiate(ground);
+            }                       
+
             pl.transform.SetParent(transform);
-            pl.GetComponent<Ground>().Init(maxDistance, count);
+            pl.GetComponent<Ground>().Init(maxDistance, count, height);
             maxDistance += count;
+
+            if (first) {
+                for (int i = 0; i < 3; i++) {
+                    InstanseCoin(new Vector3(maxDistance - 2 - i, Ground.STANDART_HEIGHT + .5f));
+                }
+                countGenCoin = Random.Range(2, 4);
+            }
+
+            if (countGenCoin == 0) {
+                InstanseCoin(new Vector3(maxDistance - Random.Range(1, count), Ground.STANDART_HEIGHT + .5f + height));
+                countGenCoin = Random.Range(2, 4);
+            }
+
+            countGenCoin--;
+        }
+
+        void InstanseCoin(Vector3 pos) {
+            GameObject c = trash.GetCoins(); 
+            if (c == null) {
+                c = Instantiate(coin);
+            }
+            c.transform.SetParent(transform, false);
+            c.transform.position = pos;     
         }
 
 
@@ -32,17 +77,10 @@ namespace Voiceman {
         }
 
         void Update() {
-            if (run && Camera.main.transform.position.x + Camera.main.orthographicSize * 2 * Screen.width / Screen.height / 2 + 1 >= maxDistance) {
-                maxDistance += Random.Range(1, 5);
-                BuildPlatform(Random.Range(1, 5));
+            if (run && Camera.main.transform.position.x + camDistance >= maxDistance) {
+                BuildPlatform();
             }
         }
-
-        /*void Build(GameObject prefab) {
-            GameObject go = Instantiate(prefab);
-            go.transform.SetParent(transform, false);
-            maxDistance = go.GetComponent<IRegion>().Init(maxDistance);
-        } */
-
+    
     }   
 }

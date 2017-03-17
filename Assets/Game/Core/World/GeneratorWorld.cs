@@ -7,6 +7,8 @@ namespace Voiceman {
         GameObject ground;
         [SerializeField]
         GameObject coin;
+        [SerializeField]
+        GameObject bee;
 
         int maxDistance = 0;
 
@@ -30,6 +32,8 @@ namespace Voiceman {
 
 
         int countGenCoin = 0;
+        [SerializeField]
+        int beesCount = 0;
 
         void BuildPlatform(bool first = false) {
             maxDistance += first ? 0 : Random.Range(2, 4);
@@ -51,13 +55,18 @@ namespace Voiceman {
                     InstanseCoin(new Vector3(maxDistance - 2 - i, Ground.STANDART_HEIGHT + .5f));
                 }
                 countGenCoin = Random.Range(2, 4);
+                beesCount = Random.Range(3, 6);
             }
 
             if (countGenCoin == 0) {
                 InstanseCoin(new Vector3(maxDistance - Random.Range(1, count), Ground.STANDART_HEIGHT + .5f + height));
                 countGenCoin = Random.Range(2, 4);
+            } else if (beesCount <= 0 && count > 4) {
+                InstanseBee(new Vector3(maxDistance - 1, Ground.STANDART_HEIGHT + height));
+                beesCount = Random.Range(3, 6);
             }
 
+            beesCount--;
             countGenCoin--;
         }
 
@@ -68,6 +77,16 @@ namespace Voiceman {
             }
             c.transform.SetParent(transform, false);
             c.transform.position = pos;     
+        }
+
+        void InstanseBee(Vector3 pos) {
+            GameObject c = trash.GetBee();
+            if (c == null) {
+                c = Instantiate(bee);
+            }
+            c.transform.SetParent(transform, false);
+            c.transform.position = pos;
+            c.GetComponent<BeeMob.Bee>().Init();
         }
 
 

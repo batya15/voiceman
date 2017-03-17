@@ -17,6 +17,10 @@ namespace Voiceman {
                 Prefs.UserPrefs.coins++;
                 trash.UtilCoins(this);
             }
+
+            if (other.tag.Equals("visibility")) {
+                trash.UtilCoins(this);
+            }
         }
     }
 }

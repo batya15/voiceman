@@ -7,6 +7,7 @@ namespace Prefs {
 
         const string BEST = "user.best";
         const string COUNS = "user.coins";
+        const string SENSITIVITY = "user.sensitivity";
 
         public static int best {
             get { return PlayerPrefs.GetInt(BEST, 0); }
@@ -24,6 +25,16 @@ namespace Prefs {
                 if (value != coins) {
                     PlayerPrefs.SetInt(COUNS, value);
                     Broadcaster.SendEvent("ChangedCoins");
+                }
+            }
+        }
+
+        public static float sensitivity {
+            get { return (float)PlayerPrefs.GetInt(SENSITIVITY, 40) / 100; }
+            set {
+                if (value != sensitivity) {
+                    Debug.Log(value);
+                    PlayerPrefs.SetInt(SENSITIVITY, Mathf.FloorToInt(value * 100));
                 }
             }
         }

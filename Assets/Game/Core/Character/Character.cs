@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections;        
+﻿using Prefs;
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class Character : MonoBehaviour {
@@ -7,6 +8,9 @@ public class Character : MonoBehaviour {
     Rigidbody2D rigitbody; 
     Vector3 lastPosition = Vector3.zero;
     bool _phisics = false;
+    [SerializeField]
+    bool jump = false;
+
     bool phisics {
         get { return _phisics; }
         set {
@@ -34,8 +38,10 @@ public class Character : MonoBehaviour {
     }
 
     public void Death() {
-        phisics = false;
-        Broadcaster.SendEvent("OpenContinue");
+        if (phisics) {
+            phisics = false;
+            Broadcaster.SendEvent("OpenContinue");
+        }                                                 
     }
 
     
@@ -56,6 +62,10 @@ public class Character : MonoBehaviour {
         }                                             
     }
 
+    internal void OnChangeBottomCollider(bool r) {
+        jump = r;
+    }
+
     void StopPhysics() {
         rigitbody.velocity = Vector2.zero;
         rigitbody.isKinematic = true;
@@ -67,9 +77,14 @@ public class Character : MonoBehaviour {
     }
 
     void Update () {
-        if (MicInput.MicLoudness > 0.1f) {  
-            rigitbody.AddForce(new Vector2(MicInput.MicLoudness * 2, MicInput.MicLoudness * 2), ForceMode2D.Impulse);
+        if (MicInput.MicLoudness > 0.2f) {               
+            rigitbody.AddForce(new Vector2(Mathf.Min(MicInput.MicLoudness * 3.0f + 3.0f, 12.0f), 0.1f), ForceMode2D.Force);
         }
+        Debug.Log(MicInput.MicLoudness);
+        if (MicInput.MicLoudness >= 4.5f && !jump) {
+            rigitbody.AddForce(new Vector2(0, Mathf.Min(MicInput.MicLoudness * 0.02f +2.5f, 4.0f)), ForceMode2D.Impulse);
+        }
+       
 
 #if TEST_BUILD
         if (Input.GetButton("Horizontal")) {

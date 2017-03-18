@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Prefs;
+using UnityEngine;
 
 public class MicInput : MonoBehaviour {
 
@@ -27,7 +28,7 @@ public class MicInput : MonoBehaviour {
         _clipRecord.GetData(waveData, micPosition);  
 
         for (int i = 0; i < _sampleWindow; i++) {
-            float wavePeak = waveData[i] * waveData[i];
+            float wavePeak = waveData[i] * waveData[i] * (UserPrefs.sensitivity * 10);
             levelMax = Mathf.Max(levelMax, wavePeak);
         }
         return levelMax;

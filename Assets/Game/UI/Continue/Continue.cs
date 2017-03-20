@@ -8,6 +8,8 @@ namespace GameUI {
 
         [SerializeField]
         Button coinBtn;
+        [SerializeField]
+        CanvasGroup adsBtn;
 
         int countDeath = 1;
 
@@ -25,7 +27,10 @@ namespace GameUI {
             Show();
         }
 
-        void No() {
+        IEnumerator No() {
+            if (countDeath == 1) {
+                yield return Ads.Manager.Play(Ads.PLACEMENT.FAILED_GAME);
+            }
             countDeath = 1;
             Voiceman.GameState.state = Voiceman.GAME_STATE.FINISH;
             Close();
@@ -36,6 +41,24 @@ namespace GameUI {
             Prefs.UserPrefs.coins -= price;
             Broadcaster.SendEvent("RegenerateCharacter");
             Close();
+        }
+
+        IEnumerator forAds() {
+            countDeath++;
+            yield return Ads.Manager.Play(Ads.PLACEMENT.DEATH_VIDEO);
+            Broadcaster.SendEvent("RegenerateCharacter");
+            Close();
+
+        }    
+
+        void Update() {
+            if (countDeath > 2 || !Ads.Manager.Ready(Ads.PLACEMENT.DEATH_VIDEO)) {
+                adsBtn.interactable = false;
+                adsBtn.alpha = 0;
+            } else {
+                adsBtn.interactable = true;
+                adsBtn.alpha = 1;
+            }
         }
     }
 }

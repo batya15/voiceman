@@ -8,6 +8,7 @@ namespace Prefs {
         const string BEST = "user.best";
         const string COUNS = "user.coins";
         const string SENSITIVITY = "user.sensitivity";
+        internal static bool activeSound = true;
 
         public static int best {
             get { return PlayerPrefs.GetInt(BEST, 0); }

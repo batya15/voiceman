@@ -12,6 +12,7 @@ namespace GameUI {
         }
 
         protected void Show() {
+            Broadcaster.SendEvent("PlayOneShot", "window");
             anim.SetBool("show", true);
             OnShow();
         }

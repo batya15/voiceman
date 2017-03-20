@@ -7,9 +7,23 @@ public class Character : MonoBehaviour {
 
     Rigidbody2D rigitbody; 
     Vector3 lastPosition = Vector3.zero;
+    Animator animator;
     bool _phisics = false;
-    [SerializeField]
-    bool jump = false;
+    bool _jump = false;
+    bool jump {
+        get { return _jump; }
+        set { if (_jump == value) return;
+            _jump = value;
+            if (_jump && _phisics) {
+                Broadcaster.SendEvent("PlayOneShot", "jump");
+            }
+            animator.SetBool("jump", value);
+        }
+    }
+    bool walk {
+        get { return animator.GetBool("walk"); }
+        set { animator.SetBool("walk", value); }
+    }
 
     bool phisics {
         get { return _phisics; }
@@ -25,6 +39,7 @@ public class Character : MonoBehaviour {
 
     void Awake() {
         rigitbody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         Broadcaster.Subscribe(this, "RegenerateCharacter");
     }
 
@@ -40,6 +55,7 @@ public class Character : MonoBehaviour {
     public void Death() {
         if (phisics) {
             phisics = false;
+            Broadcaster.SendEvent("PlayOneShot", "death");
             Broadcaster.SendEvent("OpenContinue");
         }                                                 
     }
@@ -76,15 +92,19 @@ public class Character : MonoBehaviour {
         rigitbody.isKinematic = false;
     }
 
+
+    float lastX = 0;
+
     void Update () {
         if (MicInput.MicLoudness > 0.2f) {               
             rigitbody.AddForce(new Vector2(Mathf.Min(MicInput.MicLoudness * 3.0f + 3.0f, 12.0f), 0.1f), ForceMode2D.Force);
         }
-        Debug.Log(MicInput.MicLoudness);
         if (MicInput.MicLoudness >= 4.5f && !jump) {
             rigitbody.AddForce(new Vector2(0, Mathf.Min(MicInput.MicLoudness * 0.02f +2.5f, 4.0f)), ForceMode2D.Impulse);
         }
-       
+
+        walk = lastX < transform.position.x;
+        lastX = transform.position.x;
 
 #if TEST_BUILD
         if (Input.GetButton("Horizontal")) {

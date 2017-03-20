@@ -15,6 +15,7 @@ namespace Voiceman {
         void OnTriggerEnter2D(Collider2D other) {
             if (other.tag.Equals("character")) {
                 Prefs.UserPrefs.coins++;
+                Broadcaster.SendEvent("PlayOneShot", "coin");
                 trash.UtilCoins(this);
             }
 
